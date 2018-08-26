@@ -2,6 +2,4 @@
     <string name="app_name">Schedule Flow</string>
     <string name="appointment_details_label">Details</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
