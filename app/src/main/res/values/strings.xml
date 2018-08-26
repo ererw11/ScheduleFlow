@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Schedule Flow</string>
+    <string name="appointment_details_label">Details</string>
+</resources>
