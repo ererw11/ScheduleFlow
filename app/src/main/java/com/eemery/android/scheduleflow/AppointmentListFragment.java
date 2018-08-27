@@ -77,7 +77,7 @@ public class AppointmentListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Intent intent = AppointmentActivity.newIntent(getActivity(), appointment.getId());
+            Intent intent = AppointmentPagerActivity.newIntent(getActivity(), appointment.getId());
             startActivity(intent);
         }
     }
