@@ -1,5 +1,6 @@
 package com.eemery.android.scheduleflow;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,8 +41,18 @@ public class AppointmentListFragment extends Fragment {
         CalendarLab calendarLab = CalendarLab.get(getActivity());
         List<Appointment> appointments = calendarLab.getAppointmentList();
 
-        adapter = new AppointmentAdapter(appointments);
-        appointmentRecyclerView.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new AppointmentAdapter(appointments);
+            appointmentRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     private class AppointmentHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
@@ -66,7 +77,8 @@ public class AppointmentListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(), this.appointment.getNotes() + " clicked!", Toast.LENGTH_SHORT).show();
+            Intent intent = AppointmentActivity.newIntent(getActivity(), appointment.getId());
+            startActivity(intent);
         }
     }
 

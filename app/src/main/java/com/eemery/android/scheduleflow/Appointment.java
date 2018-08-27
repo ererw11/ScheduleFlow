@@ -14,7 +14,7 @@ public class Appointment {
     public Appointment() {
         this.id = UUID.randomUUID();
         this.userName = "User's Name";
-        this.appointmentFor = "Appointment with Name";
+        this.appointmentFor = "Person Name";
         this.date = new Date();
     }
 

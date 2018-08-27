@@ -10,18 +10,32 @@ import android.view.ViewGroup;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.UUID;
+
 import androidx.fragment.app.Fragment;
 
 public class AppointmentFragment extends Fragment {
+
+    private static final String ARG_APPOINTMENT_ID = "appointment_id";
 
     private Appointment appointment;
     private TextInputEditText notesEditText;
     private MaterialButton dateButton;
 
+    public static AppointmentFragment newInstance(UUID appointmentId) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_APPOINTMENT_ID, appointmentId);
+
+        AppointmentFragment fragment = new AppointmentFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.appointment = new Appointment();
+        UUID appointmentId = (UUID) getArguments().getSerializable(ARG_APPOINTMENT_ID);
+        appointment = CalendarLab.get(getActivity()).getAppointment(appointmentId);
     }
 
 
@@ -30,6 +44,7 @@ public class AppointmentFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_appointment, container, false);
 
         notesEditText = v.findViewById(R.id.notes_edit_text);
+        notesEditText.setText(appointment.getNotes());
         notesEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
