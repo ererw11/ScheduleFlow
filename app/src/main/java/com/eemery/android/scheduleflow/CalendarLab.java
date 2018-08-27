@@ -23,7 +23,7 @@ public class CalendarLab {
         appointmentList = new ArrayList<>();
         for (int i = 0; i< 10; i++) {
             Appointment appointment = new Appointment();
-            appointment.setNotes("Notes " + i);
+            appointment.setNotes("Note " + i);
             appointmentList.add(appointment);
         }
     }
