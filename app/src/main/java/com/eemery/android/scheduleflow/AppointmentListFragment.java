@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.List;
 
 import androidx.fragment.app.Fragment;
@@ -17,6 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class AppointmentListFragment extends Fragment {
 
     private RecyclerView appointmentRecyclerView;
+    private FloatingActionButton addApointmentFab;
+
     private AppointmentAdapter adapter;
 
     public AppointmentListFragment() {
@@ -31,6 +35,18 @@ public class AppointmentListFragment extends Fragment {
 
         appointmentRecyclerView = v.findViewById(R.id.appointment_recycler_view);
         appointmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        addApointmentFab = v.findViewById(R.id.add_appointment_fab);
+        addApointmentFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Appointment appointment = new Appointment();
+                CalendarLab.get(getActivity()).addApointment(appointment);
+                Intent intent = AppointmentPagerActivity
+                        .newIntent(getActivity(), appointment.getId());
+                startActivity(intent);
+            }
+        });
 
         updateUI();
 

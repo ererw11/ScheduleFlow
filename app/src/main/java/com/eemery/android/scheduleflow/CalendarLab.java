@@ -21,11 +21,10 @@ public class CalendarLab {
 
     private CalendarLab(Context context) {
         appointmentList = new ArrayList<>();
-        for (int i = 0; i< 10; i++) {
-            Appointment appointment = new Appointment();
-            appointment.setNotes("Note " + i);
-            appointmentList.add(appointment);
-        }
+    }
+
+    public void addApointment(Appointment appointment) {
+        appointmentList.add(appointment);
     }
 
     public List<Appointment> getAppointmentList() {

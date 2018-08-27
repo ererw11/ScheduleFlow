@@ -18,7 +18,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AppointmentPagerActivity"/>
+        <activity android:name=".AppointmentPagerActivity"
+            android:parentActivityName=".AppointmentListActivity"/>
 
     </application>
 
