@@ -14,8 +14,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -100,25 +100,24 @@ public class AppointmentFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Map<String, Object> appointmentToDb = new HashMap<>();
-                appointmentToDb.put("id", appointment.getId().toString());
                 appointmentToDb.put("userName", appointment.getUserName());
                 appointmentToDb.put("appointmentWith", appointment.getAppointmentWith());
                 appointmentToDb.put("date", appointment.getDate());
                 appointmentToDb.put("notes", appointment.getNotes());
 
-
-                firebaseFirestore.collection("appointment")
-                        .add(appointmentToDb)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                firebaseFirestore.collection("appointments")
+                        .document(appointment.getId().toString())
+                        .set(appointmentToDb, SetOptions.merge())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
+                                Log.w(TAG, "Error writing document", e);
                             }
                         });
             }
