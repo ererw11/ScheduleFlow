@@ -7,14 +7,14 @@ public class Appointment {
 
     private UUID id;
     private String userName;
-    private String appointmentFor;
+    private String appointmentWith;
     private Date date;
     private String notes;
 
     public Appointment() {
         this.id = UUID.randomUUID();
         this.userName = "User's Name";
-        this.appointmentFor = "Person Name";
+        this.appointmentWith = "Person Name";
         this.date = new Date();
     }
 
@@ -30,12 +30,12 @@ public class Appointment {
         this.userName = userName;
     }
 
-    public String getAppointmentFor() {
-        return appointmentFor;
+    public String getAppointmentWith() {
+        return appointmentWith;
     }
 
-    public void setAppointmentFor(String appointmentFor) {
-        this.appointmentFor = appointmentFor;
+    public void setAppointmentWith(String appointmentWith) {
+        this.appointmentWith = appointmentWith;
     }
 
     public Date getDate() {

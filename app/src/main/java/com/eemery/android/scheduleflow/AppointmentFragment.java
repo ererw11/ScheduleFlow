@@ -5,21 +5,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 public class AppointmentFragment extends Fragment {
+
+    private static final String TAG = AppointmentFragment.class.getSimpleName();
 
     private static final String ARG_APPOINTMENT_ID = "appointment_id";
     private static final String DIALOG_DATE = "dialog_date";
@@ -29,6 +38,9 @@ public class AppointmentFragment extends Fragment {
     private Appointment appointment;
     private TextInputEditText notesEditText;
     private MaterialButton dateButton;
+    private MaterialButton submitButton;
+
+    private FirebaseFirestore firebaseFirestore;
 
     public static AppointmentFragment newInstance(UUID appointmentId) {
         Bundle args = new Bundle();
@@ -42,6 +54,7 @@ public class AppointmentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseFirestore = FirebaseFirestore.getInstance();
         UUID appointmentId = (UUID) getArguments().getSerializable(ARG_APPOINTMENT_ID);
         appointment = CalendarLab.get(getActivity()).getAppointment(appointmentId);
     }
@@ -79,6 +92,35 @@ public class AppointmentFragment extends Fragment {
                         .newInstance(appointment.getDate());
                 dialog.setTargetFragment(AppointmentFragment.this, REQUEST_DATE);
                 dialog.show(manager, DIALOG_DATE);
+            }
+        });
+
+        submitButton = v.findViewById(R.id.submit_appointment);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Map<String, Object> appointmentToDb = new HashMap<>();
+                appointmentToDb.put("id", appointment.getId().toString());
+                appointmentToDb.put("userName", appointment.getUserName());
+                appointmentToDb.put("appointmentWith", appointment.getAppointmentWith());
+                appointmentToDb.put("date", appointment.getDate());
+                appointmentToDb.put("notes", appointment.getNotes());
+
+
+                firebaseFirestore.collection("appointment")
+                        .add(appointmentToDb)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding document", e);
+                            }
+                        });
             }
         });
 

@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -87,7 +86,7 @@ public class AppointmentListFragment extends Fragment {
 
         public void bind(Appointment appointment) {
             this.appointment = appointment;
-            appointmentWithTextView.setText(appointment.getAppointmentFor());
+            appointmentWithTextView.setText(appointment.getAppointmentWith());
             appointmentDateTextView.setText(appointment.getDate().toString());
         }
 
