@@ -32,6 +32,10 @@ public class CalendarLab {
         return appointmentList;
     }
 
+    public void deleteAppointmentList() {
+        appointmentList = new ArrayList<>();
+    }
+
     public Appointment getAppointment(UUID id) {
         for (Appointment appointment : appointmentList) {
             if (appointment.getId().equals(id)) {

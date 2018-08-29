@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -43,6 +46,7 @@ public class AppointmentListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
@@ -75,13 +79,6 @@ public class AppointmentListFragment extends Fragment {
     }
 
     private void acquireAppointmentsFromDb() {
-
-    }
-
-    private void updateUI() {
-        CalendarLab calendarLab = CalendarLab.get(getActivity());
-        final List<Appointment> appointments = calendarLab.getAppointmentList();
-
         firebaseFirestore.collection("appointments")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -118,13 +115,8 @@ public class AppointmentListFragment extends Fragment {
                                 CalendarLab.get(getActivity()).addApointment(appointmentForList);
                             }
 
-                            // Add the Appointments to the RecyclerView
-                            if (adapter == null) {
-                                adapter = new AppointmentAdapter(appointments);
-                                appointmentRecyclerView.setAdapter(adapter);
-                            } else {
-                                adapter.notifyDataSetChanged();
-                            }
+                            updateUI();
+
 
                         } else {
                             // Data was not pulled from Db
@@ -134,10 +126,40 @@ public class AppointmentListFragment extends Fragment {
                 });
     }
 
+    private void updateUI() {
+        // Add the Appointments to the RecyclerView
+        CalendarLab calendarLab = CalendarLab.get(getActivity());
+        List<Appointment> appointments = calendarLab.getAppointmentList();
+
+        if (adapter == null) {
+            adapter = new AppointmentAdapter(appointments);
+            appointmentRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         updateUI();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.appointment_list_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                updateUI();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class AppointmentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
