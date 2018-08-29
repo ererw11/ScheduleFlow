@@ -22,6 +22,10 @@ public class Appointment {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getUserName() {
         return userName;
     }

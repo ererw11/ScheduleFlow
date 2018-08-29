@@ -12,6 +12,10 @@ public class CalendarLab {
 
     private List<Appointment> appointmentList;
 
+    private CalendarLab(Context context) {
+        appointmentList = new ArrayList<>();
+    }
+
     public static CalendarLab get(Context context) {
         if (calendarLab == null) {
             calendarLab = new CalendarLab(context);
@@ -19,12 +23,9 @@ public class CalendarLab {
         return calendarLab;
     }
 
-    private CalendarLab(Context context) {
-        appointmentList = new ArrayList<>();
-    }
-
     public void addApointment(Appointment appointment) {
         appointmentList.add(appointment);
+
     }
 
     public List<Appointment> getAppointmentList() {
@@ -39,6 +40,4 @@ public class CalendarLab {
         }
         return null;
     }
-
-
 }

@@ -35,7 +35,7 @@ public class AppointmentPagerActivity extends AppCompatActivity {
         UUID appointmentId = (UUID) getIntent()
                 .getSerializableExtra(EXTRA_APPOINTMENT_ID);
 
-        viewPager= findViewById(R.id.appointment_view_pager);
+        viewPager = findViewById(R.id.appointment_view_pager);
 
         appointments = CalendarLab.get(this).getAppointmentList();
         FragmentManager fragmentManager = getSupportFragmentManager();
