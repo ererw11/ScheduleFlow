@@ -85,6 +85,7 @@ public class AppointmentListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            CalendarLab.get(getActivity()).deleteAppointmentList();
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                 // Get Appointment ID and convert back to UUID
@@ -113,10 +114,9 @@ public class AppointmentListFragment extends Fragment {
                                 appointmentForList.setNotes(appointmentNotes);
 
                                 CalendarLab.get(getActivity()).addApointment(appointmentForList);
+
+                                updateUI();
                             }
-
-                            updateUI();
-
 
                         } else {
                             // Data was not pulled from Db
@@ -124,6 +124,7 @@ public class AppointmentListFragment extends Fragment {
                         }
                     }
                 });
+
     }
 
     private void updateUI() {
@@ -155,7 +156,7 @@ public class AppointmentListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                updateUI();
+                acquireAppointmentsFromDb();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

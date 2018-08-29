@@ -33,7 +33,7 @@ public class CalendarLab {
     }
 
     public void deleteAppointmentList() {
-        appointmentList = new ArrayList<>();
+        appointmentList.clear();
     }
 
     public Appointment getAppointment(UUID id) {
