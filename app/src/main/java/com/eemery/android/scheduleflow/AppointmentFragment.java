@@ -3,11 +3,15 @@ package com.eemery.android.scheduleflow;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -63,6 +67,7 @@ public class AppointmentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         appointmentId = (UUID) getArguments().getSerializable(ARG_APPOINTMENT_ID);
         appointment = CalendarLab.get(getActivity()).getAppointment(appointmentId);
 
@@ -189,6 +194,7 @@ public class AppointmentFragment extends Fragment {
                                 Log.w(TAG, "Error writing document", e);
                             }
                         });
+                getActivity().onBackPressed();
             }
         });
 
@@ -206,5 +212,34 @@ public class AppointmentFragment extends Fragment {
             appointment.setDate(date);
             dateButton.setText(appointment.getDate().toString());
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.appointment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share_appointment:
+                addEventToCalendar(appointment);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void addEventToCalendar(Appointment appointment) {
+        Intent eventIntent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Place")
+                .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, appointment.getDate())
+                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+
+        startActivity(eventIntent);
     }
 }
