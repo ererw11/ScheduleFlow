@@ -40,9 +40,9 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
 
     @Override
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        final View forgroundView = ((AppointmentListFragment.AppointmentHolder) viewHolder).viewForeground;
+        final View foregroundView = ((AppointmentListFragment.AppointmentHolder) viewHolder).viewForeground;
 
-        getDefaultUIUtil().clearView(forgroundView);
+        getDefaultUIUtil().clearView(foregroundView);
     }
 
     @Override
@@ -66,6 +66,6 @@ public class RecyclerItemTouchHelper extends ItemTouchHelper.SimpleCallback {
     }
 
     public interface RecyclerItemTouchHelperListener {
-        void onSwiped(RecyclerView.ViewHolder viewHolder, int directon, int position);
+        void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position);
     }
 }

@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class AppointmentListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private static final String TAG = AppointmentListFragment.class.getSimpleName();
@@ -73,7 +74,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
             @Override
             public void onClick(View view) {
                 Appointment appointment = new Appointment();
-                CalendarLab.get(getActivity()).addApointment(appointment);
+                CalendarLab.get(getActivity()).addAppointment(appointment);
                 Intent intent = AppointmentPagerActivity
                         .newIntent(getActivity(), appointment.getId());
                 startActivity(intent);
@@ -122,7 +123,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
                                 appointmentForList.setUserName(appointmentUser);
                                 appointmentForList.setNotes(appointmentNotes);
 
-                                CalendarLab.get(getActivity()).addApointment(appointmentForList);
+                                CalendarLab.get(getActivity()).addAppointment(appointmentForList);
 
                                 updateUI();
                             }

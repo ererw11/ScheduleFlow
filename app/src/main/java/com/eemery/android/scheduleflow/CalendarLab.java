@@ -23,7 +23,7 @@ public class CalendarLab {
         return calendarLab;
     }
 
-    public void addApointment(Appointment appointment) {
+    public void addAppointment(Appointment appointment) {
         appointmentList.add(appointment);
 
     }

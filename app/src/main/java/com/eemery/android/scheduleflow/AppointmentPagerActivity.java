@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class AppointmentPagerActivity extends AppCompatActivity {
     private static final String EXTRA_APPOINTMENT_ID =
             "com.eemery.android.scheduleflow.appointment_id";
