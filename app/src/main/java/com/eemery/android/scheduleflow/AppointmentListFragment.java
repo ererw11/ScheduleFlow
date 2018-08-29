@@ -9,11 +9,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -25,10 +29,11 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AppointmentListFragment extends Fragment {
+public class AppointmentListFragment extends Fragment implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private static final String TAG = AppointmentListFragment.class.getSimpleName();
 
@@ -38,6 +43,7 @@ public class AppointmentListFragment extends Fragment {
     private FirebaseFirestore firebaseFirestore;
 
     private AppointmentAdapter adapter;
+    private List<Appointment> appointmentList;
 
     public AppointmentListFragment() {
         // Required empty public constructor
@@ -58,6 +64,9 @@ public class AppointmentListFragment extends Fragment {
 
         appointmentRecyclerView = v.findViewById(R.id.appointment_recycler_view);
         appointmentRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(appointmentRecyclerView);
 
         addAppointmentFab = v.findViewById(R.id.add_appointment_fab);
         addAppointmentFab.setOnClickListener(new View.OnClickListener() {
@@ -131,6 +140,7 @@ public class AppointmentListFragment extends Fragment {
         // Add the Appointments to the RecyclerView
         CalendarLab calendarLab = CalendarLab.get(getActivity());
         List<Appointment> appointments = calendarLab.getAppointmentList();
+        appointmentList = appointments;
 
         if (adapter == null) {
             adapter = new AppointmentAdapter(appointments);
@@ -157,20 +167,63 @@ public class AppointmentListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.refresh:
                 acquireAppointmentsFromDb();
+                updateUI();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private class AppointmentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof AppointmentHolder) {
 
+            // Get the id of the deleted Appointment
+            final UUID deletedAppointmentId = appointmentList.get(viewHolder.getAdapterPosition()).getId();
+
+            // Remove the Appointment from RecyclerView
+            adapter.removeAppointment(viewHolder.getAdapterPosition());
+
+            // Remove the Appointment from the database
+            firebaseFirestore.collection("appointments").document(deletedAppointmentId.toString())
+                    .delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                            // Snackbar confirmation
+                            final Snackbar snackbar = Snackbar.make(getView(), "Confirm Deleting Id " + deletedAppointmentId.toString(), Snackbar.LENGTH_LONG);
+                            snackbar.setAction("DISMISS", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    snackbar.dismiss();
+                                }
+                            });
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorAccent));
+                            snackbar.show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error deleting document", e);
+                        }
+                    });
+        }
+    }
+
+    public class AppointmentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public RelativeLayout viewBackground, viewForeground;
         private TextView appointmentWithTextView;
         private TextView appointmentDateTextView;
         private Appointment appointment;
 
+
         public AppointmentHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_appointment, parent, false));
+            viewBackground = itemView.findViewById(R.id.view_background);
+            viewForeground = itemView.findViewById(R.id.view_foreground);
             appointmentWithTextView = itemView.findViewById(R.id.appointment_with_name);
             appointmentDateTextView = itemView.findViewById(R.id.appointment_date);
             itemView.setOnClickListener(this);
@@ -189,7 +242,7 @@ public class AppointmentListFragment extends Fragment {
         }
     }
 
-    private class AppointmentAdapter extends RecyclerView.Adapter<AppointmentHolder> {
+    public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentHolder> {
 
         private List<Appointment> appointments;
 
@@ -213,6 +266,16 @@ public class AppointmentListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return appointments.size();
+        }
+
+        public void removeAppointment(int position) {
+            appointments.remove(position);
+            notifyItemRemoved(position);
+        }
+
+        public void restoreAppointment(Appointment appointment, int position) {
+            appointments.add(position, appointment);
+            notifyItemInserted(position);
         }
     }
 }
