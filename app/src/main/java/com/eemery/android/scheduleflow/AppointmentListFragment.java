@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -42,6 +44,8 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
     private FloatingActionButton addAppointmentFab;
 
     private FirebaseFirestore firebaseFirestore;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     private AppointmentAdapter adapter;
     private List<Appointment> appointmentList;
@@ -55,6 +59,14 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         firebaseFirestore = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                Utils.confirmSignedIn(getActivity(), user);
+            }
+        };
     }
 
     @Override
@@ -169,6 +181,10 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
             case R.id.refresh:
                 acquireAppointmentsFromDb();
                 updateUI();
+                return true;
+            case R.id.logout:
+                firebaseAuth.signOut();
+                startActivity(SignInActivity.createIntent(getContext()));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

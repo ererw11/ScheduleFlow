@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/appointment_date"
             android:layout_alignStart="@+id/appointment_date"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             tools:text="Appointment With" />
 
         <TextView

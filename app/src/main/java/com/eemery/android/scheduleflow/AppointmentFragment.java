@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class AppointmentFragment extends Fragment {
         });
 
         dateButton = v.findViewById(R.id.appointment_date_button);
-        dateButton.setText(appointment.getDate().toString());
+        updateDate();
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,8 +211,12 @@ public class AppointmentFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             appointment.setDate(date);
-            dateButton.setText(appointment.getDate().toString());
+            updateDate();
         }
+    }
+
+    private void updateDate() {
+        dateButton.setText(Utils.formatDateWithTime(appointment.getDate()));
     }
 
     @Override
@@ -232,14 +237,27 @@ public class AppointmentFragment extends Fragment {
     }
 
     private void addEventToCalendar(Appointment appointment) {
-        Intent eventIntent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Place")
-                .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, appointment.getDate())
-                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+//        Intent eventIntent = new Intent(Intent.ACTION_INSERT)
+//                .setData(CalendarContract.Events.CONTENT_URI)
+//                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
+//                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Place")
+//                .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
+//                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, appointment.getDate())
+//                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+//
+//        startActivity(eventIntent);
 
-        startActivity(eventIntent);
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(2012, 0, 19, 7, 30);
+        Calendar endTime = Calendar.getInstance();
+        endTime.set(2012, 0, 19, 8, 30);
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
+                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
+                .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Address");
+        startActivity(intent);
     }
 }
