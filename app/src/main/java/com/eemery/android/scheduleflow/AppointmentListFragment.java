@@ -131,7 +131,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
 
                                 appointmentForList.setId(stringIdToUUID);
                                 appointmentForList.setDate(appointmentDate);
-                                appointmentForList.setAppointmentWith(appointmentWith);
+                                appointmentForList.setStylist(appointmentWith);
                                 appointmentForList.setUserName(appointmentUser);
                                 appointmentForList.setNotes(appointmentNotes);
 
@@ -248,7 +248,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
 
         public void bind(Appointment appointment) {
             this.appointment = appointment;
-            appointmentWithTextView.setText(appointment.getAppointmentWith());
+            appointmentWithTextView.setText(appointment.getStylist());
             appointmentDateTextView.setText(appointment.getDate().toString());
         }
 

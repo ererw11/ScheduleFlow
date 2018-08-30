@@ -13,12 +13,11 @@
         android:layout_marginBottom="8dp"
         android:text="Schedule an appointment" />
 
-    <!--<Spinner-->
-        <!--android:id="@+id/appointment_with_spinner"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:prompt="Choose Appointee" />-->
+    <Spinner
+        android:id="@+id/stylist_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/appointment_date_button"

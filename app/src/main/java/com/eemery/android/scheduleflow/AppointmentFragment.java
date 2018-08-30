@@ -14,21 +14,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,7 +45,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class AppointmentFragment extends Fragment {
+public class AppointmentFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private static final String TAG = AppointmentFragment.class.getSimpleName();
 
@@ -50,8 +58,11 @@ public class AppointmentFragment extends Fragment {
     private TextInputEditText notesEditText;
     private MaterialButton dateButton;
     private MaterialButton submitButton;
+    private Spinner appointmentSpinner;
 
     private UUID appointmentId;
+
+    private List<String> stylistList;
 
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference appointmentDocRef;
@@ -113,22 +124,42 @@ public class AppointmentFragment extends Fragment {
             }
         });
 
+        appointmentSpinner = v.findViewById(R.id.stylist_spinner);
+        firebaseFirestore.collection("stylists")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            stylistList = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String stylist = document.getString("name");
+                                Log.d(TAG, stylist);
+                                if (stylist != null) {
+                                    stylistList.add(stylist);
+                                }
+                            }
+
+                            ArrayAdapter<String> stylistAdapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, stylistList);
+                            stylistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            appointmentSpinner.setAdapter(stylistAdapter);
+                        }
+                    }
+                });
+        appointmentSpinner.setOnItemSelectedListener(this);
+
         firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
             @Nullable
             @Override
             public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
                 DocumentSnapshot snapshot = transaction.get(appointmentDocRef);
-                String appointmentWith = snapshot.getString("appointmentWith");
+                String stylist = snapshot.getString("stylist");
                 Date appointmentDate = snapshot.getDate("date");
                 String appointmentNotes = snapshot.getString("notes");
                 String appointmentUserName = snapshot.getString("userName");
 
                 // Check if the data is not empty, if not fill out the fields
-                if (TextUtils.isEmpty(appointmentWith)) {
-                    Log.i(TAG, "No appointmentWith");
-                } else {
-                    // Enter appointment with field
-                }
 
                 if (TextUtils.isEmpty(appointmentDate.toString())) {
                     Log.i(TAG, "No appointmentDate");
@@ -149,7 +180,7 @@ public class AppointmentFragment extends Fragment {
                 }
 
                 Log.i(TAG, appointmentId.toString());
-                Log.i(TAG, appointmentWith);
+                Log.i(TAG, stylist);
                 Log.i(TAG, appointmentDate.toString());
                 Log.i(TAG, appointmentNotes);
                 Log.i(TAG, appointmentUserName);
@@ -176,7 +207,7 @@ public class AppointmentFragment extends Fragment {
             public void onClick(View view) {
                 Map<String, Object> appointmentToDb = new HashMap<>();
                 appointmentToDb.put("userName", appointment.getUserName());
-                appointmentToDb.put("appointmentWith", appointment.getAppointmentWith());
+                appointmentToDb.put("stylist", appointment.getStylist());
                 appointmentToDb.put("date", appointment.getDate());
                 appointmentToDb.put("notes", appointment.getNotes());
 
@@ -237,27 +268,24 @@ public class AppointmentFragment extends Fragment {
     }
 
     private void addEventToCalendar(Appointment appointment) {
-//        Intent eventIntent = new Intent(Intent.ACTION_INSERT)
-//                .setData(CalendarContract.Events.CONTENT_URI)
-//                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
-//                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Place")
-//                .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
-//                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, appointment.getDate())
-//                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
-//
-//        startActivity(eventIntent);
-
-        Calendar beginTime = Calendar.getInstance();
-        beginTime.set(2012, 0, 19, 7, 30);
-        Calendar endTime = Calendar.getInstance();
-        endTime.set(2012, 0, 19, 8, 30);
-        Intent intent = new Intent(Intent.ACTION_INSERT)
+        Intent eventIntent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis())
-                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getAppointmentWith())
+                .putExtra(CalendarContract.Events.TITLE, "Appointment with " + appointment.getStylist())
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Place")
                 .putExtra(CalendarContract.Events.DESCRIPTION, appointment.getNotes())
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, "Some Fake Address");
-        startActivity(intent);
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, appointment.getDate())
+                .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true);
+
+        startActivity(eventIntent);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        String stylist = adapterView.getItemAtPosition(i).toString();
+        appointment.setStylist(stylist);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
     }
 }
