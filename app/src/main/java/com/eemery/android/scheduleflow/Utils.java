@@ -3,10 +3,12 @@ package com.eemery.android.scheduleflow;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Date;
+import java.util.List;
 
 public class Utils {
 
@@ -24,6 +26,4 @@ public class Utils {
         String dateFormat = "MM/dd/yy h:mm a";
         return DateFormat.format(dateFormat, date).toString();
     }
-
-
 }

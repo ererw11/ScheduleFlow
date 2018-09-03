@@ -117,8 +117,8 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
                                 // Get Appointment Date
                                 Date appointmentDate = document.getDate("date");
 
-                                // Get Appointment With
-                                String appointmentWith = document.getString("appointmentWith");
+                                // Get stylist
+                                String stylist = document.getString("stylist");
 
                                 // Get Appointment User
                                 String appointmentUser = document.getString("userName");
@@ -131,7 +131,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
 
                                 appointmentForList.setId(stringIdToUUID);
                                 appointmentForList.setDate(appointmentDate);
-                                appointmentForList.setStylist(appointmentWith);
+                                appointmentForList.setStylist(stylist);
                                 appointmentForList.setUserName(appointmentUser);
                                 appointmentForList.setNotes(appointmentNotes);
 
@@ -198,6 +198,10 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
             // Get the id of the deleted Appointment
             final UUID deletedAppointmentId = appointmentList.get(viewHolder.getAdapterPosition()).getId();
 
+            // Grab the name of the stylist and the date to show on Snackbar
+            final String deletedStylist = appointmentList.get(viewHolder.getAdapterPosition()).getStylist();
+            final Date deletedDate = appointmentList.get(viewHolder.getAdapterPosition()).getDate();
+
             // Remove the Appointment from RecyclerView
             adapter.removeAppointment(viewHolder.getAdapterPosition());
 
@@ -209,7 +213,8 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
                         public void onSuccess(Void aVoid) {
                             Log.d(TAG, "DocumentSnapshot successfully deleted!");
                             // Snackbar confirmation
-                            final Snackbar snackbar = Snackbar.make(getView(), "Confirm Deleting Id " + deletedAppointmentId.toString(), Snackbar.LENGTH_LONG);
+                            final Snackbar snackbar = Snackbar.make(getView(), "Deleted appointment with " + deletedStylist +
+                                    " on " + Utils.formatDateWithTime(deletedDate), Snackbar.LENGTH_LONG);
                             snackbar.setAction("DISMISS", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
@@ -249,7 +254,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
         public void bind(Appointment appointment) {
             this.appointment = appointment;
             appointmentWithTextView.setText(appointment.getStylist());
-            appointmentDateTextView.setText(appointment.getDate().toString());
+            appointmentDateTextView.setText(Utils.formatDateWithTime(appointment.getDate()));
         }
 
         @Override
@@ -288,11 +293,6 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
         public void removeAppointment(int position) {
             appointments.remove(position);
             notifyItemRemoved(position);
-        }
-
-        public void restoreAppointment(Appointment appointment, int position) {
-            appointments.add(position, appointment);
-            notifyItemInserted(position);
         }
     }
 }

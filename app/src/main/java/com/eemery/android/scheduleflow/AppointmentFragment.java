@@ -124,6 +124,7 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
             }
         });
 
+        // Set up the Stylist Spinner
         appointmentSpinner = v.findViewById(R.id.stylist_spinner);
         firebaseFirestore.collection("stylists")
                 .get()
