@@ -167,6 +167,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
     public void onResume() {
         super.onResume();
         updateUI();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -237,8 +238,7 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
     public class AppointmentHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public RelativeLayout viewBackground, viewForeground;
-        private TextView appointmentWithTextView;
-        private TextView appointmentDateTextView;
+        private TextView appointmentWithTextView, appointmentDateTextView;
         private Appointment appointment;
 
 
@@ -246,14 +246,14 @@ public class AppointmentListFragment extends Fragment implements RecyclerItemTou
             super(inflater.inflate(R.layout.list_item_appointment, parent, false));
             viewBackground = itemView.findViewById(R.id.view_background);
             viewForeground = itemView.findViewById(R.id.view_foreground);
-            appointmentWithTextView = itemView.findViewById(R.id.appointment_with_name);
+            appointmentWithTextView = itemView.findViewById(R.id.appointment_stylist);
             appointmentDateTextView = itemView.findViewById(R.id.appointment_date);
             itemView.setOnClickListener(this);
         }
 
         public void bind(Appointment appointment) {
             this.appointment = appointment;
-            appointmentWithTextView.setText(appointment.getStylist());
+            appointmentWithTextView.setText(Utils.createTitleString(appointment));
             appointmentDateTextView.setText(Utils.formatDateWithTime(appointment.getDate()));
         }
 

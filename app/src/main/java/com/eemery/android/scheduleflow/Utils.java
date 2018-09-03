@@ -26,4 +26,8 @@ public class Utils {
         String dateFormat = "MM/dd/yy h:mm a";
         return DateFormat.format(dateFormat, date).toString();
     }
+
+    public static String createTitleString(Appointment appointment) {
+        return appointment.getUserName() + " with " + appointment.getStylist();
+    }
 }

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -59,6 +60,7 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
     private MaterialButton dateButton;
     private MaterialButton submitButton;
     private Spinner appointmentSpinner;
+    private TextView appointmentStylistTextView;
 
     private UUID appointmentId;
 
@@ -91,6 +93,8 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_appointment, container, false);
+
+        appointmentStylistTextView = v.findViewById(R.id.stylist_text_view);
 
         notesEditText = v.findViewById(R.id.notes_edit_text);
         notesEditText.setText(appointment.getNotes());
@@ -166,6 +170,17 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
                     Log.i(TAG, "No appointmentDate");
                 } else {
                     dateButton.setText(appointmentDate.toString());
+                }
+
+                if (TextUtils.isEmpty(stylist)) {
+                    Log.i(TAG, "No stylist selected");
+                    appointmentSpinner.setVisibility(View.VISIBLE);
+                    appointmentStylistTextView.setVisibility(View.GONE);
+
+                } else {
+                    // Hide the spinner since the stylist is already chosen
+                    appointmentSpinner.setVisibility(View.GONE);
+                    appointmentStylistTextView.setVisibility(View.VISIBLE);
                 }
 
                 if (TextUtils.isEmpty(appointmentNotes)) {
@@ -283,7 +298,14 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String stylist = adapterView.getItemAtPosition(i).toString();
-        appointment.setStylist(stylist);
+        // Confirm that the "Choose a Stylist" is not selected and enable and disable the
+        // submit button accordingly
+        if (!stylist.equalsIgnoreCase("--Choose a Stylist--")){
+            appointment.setStylist(stylist);
+            submitButton.setEnabled(true);
+        } else {
+            submitButton.setEnabled(false);
+        }
     }
 
     @Override

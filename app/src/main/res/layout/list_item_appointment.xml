@@ -40,7 +40,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/appointment_with_name"
+            android:id="@+id/appointment_stylist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Appointment With" />
@@ -48,10 +48,10 @@
         <TextView
             android:id="@+id/appointment_date"
             android:layout_width="wrap_content"
-            android:layout_below="@+id/appointment_with_name"
-            android:layout_alignStart="@+id/appointment_with_name"
-            android:layout_marginTop="32dp"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/appointment_stylist"
+            android:layout_alignStart="@+id/appointment_stylist"
+            android:layout_marginTop="32dp"
             tools:text="Appointment Date" />
 
     </RelativeLayout>

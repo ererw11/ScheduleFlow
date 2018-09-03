@@ -13,6 +13,13 @@
         android:layout_marginBottom="8dp"
         android:text="Schedule an appointment" />
 
+    <TextView
+        android:id="@+id/stylist_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        tools:text="Appointment With"/>
+
     <Spinner
         android:id="@+id/stylist_spinner"
         android:layout_width="match_parent"
@@ -25,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        tools:text="@tools:sample/date/ddmmyy" />
+        tools:text="@tools:sample/date/mmddyy" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
