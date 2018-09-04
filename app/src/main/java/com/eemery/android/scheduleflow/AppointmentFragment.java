@@ -130,28 +130,7 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
 
         // Set up the Stylist Spinner
         appointmentSpinner = v.findViewById(R.id.stylist_spinner);
-        firebaseFirestore.collection("stylists")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            stylistList = new ArrayList<>();
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String stylist = document.getString("name");
-                                Log.d(TAG, stylist);
-                                if (stylist != null) {
-                                    stylistList.add(stylist);
-                                }
-                            }
-
-                            ArrayAdapter<String> stylistAdapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, stylistList);
-                            stylistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            appointmentSpinner.setAdapter(stylistAdapter);
-                        }
-                    }
-                });
+        grabStylists();
         appointmentSpinner.setOnItemSelectedListener(this);
 
         firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
@@ -174,13 +153,10 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
 
                 if (TextUtils.isEmpty(stylist)) {
                     Log.i(TAG, "No stylist selected");
-                    appointmentSpinner.setVisibility(View.VISIBLE);
-                    appointmentStylistTextView.setVisibility(View.GONE);
-
                 } else {
-                    // Hide the spinner since the stylist is already chosen
-                    appointmentSpinner.setVisibility(View.GONE);
-                    appointmentStylistTextView.setVisibility(View.VISIBLE);
+                    // Show that this appointment is already set with a stylist
+                    appointmentStylistTextView.setText("Appointment set with " + stylist);
+                    appointmentSpinner.setSelection(Utils.getStylistPosition(stylist, stylistList));
                 }
 
                 if (TextUtils.isEmpty(appointmentNotes)) {
@@ -247,6 +223,31 @@ public class AppointmentFragment extends Fragment implements AdapterView.OnItemS
         });
 
         return v;
+    }
+
+    private void grabStylists() {
+        firebaseFirestore.collection("stylists")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            stylistList = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String stylist = document.getString("name");
+                                Log.d(TAG, stylist);
+                                if (stylist != null) {
+                                    stylistList.add(stylist);
+                                }
+                            }
+
+                            ArrayAdapter<String> stylistAdapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, stylistList);
+                            stylistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            appointmentSpinner.setAdapter(stylistAdapter);
+                        }
+                    }
+                });
     }
 
     @Override

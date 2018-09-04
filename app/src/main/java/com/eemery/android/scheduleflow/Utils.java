@@ -12,6 +12,8 @@ import java.util.List;
 
 public class Utils {
 
+    private static final String TAG = Utils.class.getSimpleName();
+
     // Confirms if the user is signed in, if not sends the user to the sign in page
     public static void confirmSignedIn(Context packageContext, FirebaseUser user) {
         if (user == null) {
@@ -29,5 +31,17 @@ public class Utils {
 
     public static String createTitleString(Appointment appointment) {
         return appointment.getUserName() + " with " + appointment.getStylist();
+    }
+
+    public static int getStylistPosition(String selectedStylist, List<String> styList) {
+        Log.i(TAG, selectedStylist);
+        Log.i(TAG, String.valueOf(styList.size()));
+        for (int i = 0; i < styList.size(); i++) {
+            if (styList.get(i).equalsIgnoreCase(selectedStylist)){
+                return i;
+            }
+        }
+        // If nothing matches, return 0
+        return 0;
     }
 }
